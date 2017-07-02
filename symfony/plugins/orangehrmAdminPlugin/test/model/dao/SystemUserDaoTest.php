@@ -1,0 +1,179 @@
+<?php
+/*** LASUHRM is a comprehensive Human Resource Management (HRM) System that captures
+ * all the essential functionalities required for the Academic/Non Academic Staff Establishments of Lagos State University respectively . This Software has been tested on a remote server and is capable of encapsulating large information of the Lagos State University staff.
+ * Copyright (C) 1983-2014 LASUHRM., http://www.lasu.edu.ng. Software Developed and re-engineered by OWOEYE OLUWATOBI MICHAEL, BSc. Computer Science.
+ *
+ *
+ */
+require_once sfConfig::get('sf_test_dir') . '/util/TestDataService.php';
+
+/**
+ * @group Admin
+ */
+class SystemUserDaoTest extends PHPUnit_Framework_TestCase {
+    
+        private $systemUserDao;
+	protected $fixture;
+
+	/**
+	 * Set up method
+	 */
+	protected function setUp() {
+
+		$this->systemUserDao = new SystemUserDao();
+		$this->fixture = sfConfig::get('sf_plugins_dir') . '/orangehrmAdminPlugin/test/fixtures/SystemUser.yml';
+        TestDataService::truncateSpecificTables(array('SystemUser'));
+		TestDataService::populate($this->fixture);
+	}
+
+	public function testSaveSystemUser() {
+                $systemUser =   new SystemUser();
+                $systemUser->setUserRoleId(1);
+                $systemUser->setEmpNumber(2);
+                $systemUser->setUserName('orangehrm');
+                $systemUser->setUserPassword('orangehrm');
+                
+                $this->systemUserDao->saveSystemUser( $systemUser );
+                
+                $saveUser =   Doctrine :: getTable('SystemUser')->find($systemUser->getId());
+		$this->assertEquals( $saveUser->getUserName(),'orangehrm');
+                $this->assertEquals( $saveUser->getUserPassword(),'orangehrm');
+	}
+        
+        /**
+         * @expectedException DaoException
+         */
+        public function testSaveSystemUserWithExistingUserName() {
+                $systemUser =   new SystemUser();
+                $systemUser->setUserRoleId(1);
+                $systemUser->setEmpNumber(2);
+                $systemUser->setUserName('samantha');
+                $systemUser->setUserPassword('orangehrm');
+                
+                $this->systemUserDao->saveSystemUser( $systemUser );
+                 
+	}
+        
+        public function testIsExistingSystemUserForNonEsistingUser(){
+            $result = $this->systemUserDao->isExistingSystemUser( 'google' );
+            $this->assertFalse( $result);
+        }
+    
+        public function testIsExistingSystemUserForEsistingUser(){
+            $result = $this->systemUserDao->isExistingSystemUser( 'Samantha' );
+            $this->assertTrue( $result instanceof SystemUser);
+        }
+        
+        public function testGetSystemUser(){
+           
+                
+            $result = $this->systemUserDao->getSystemUser( 1 );
+           
+            $this->assertEquals( $result->getUserName(),'samantha');
+            $this->assertEquals( $result->getUserPassword(),'samantha');
+        }
+        
+        
+        public function testGetSystemUserForNonExistingId(){
+            $result = $this->systemUserDao->getSystemUser( 100 );
+            $this->assertFalse( $result);
+        }
+        
+        public function testGetSystemUsers(){
+            $result = $this->systemUserDao->getSystemUsers(  );
+            $this->assertEquals(3, count(  $result));
+        }
+        
+        public function testDeleteSystemUsers(){
+            $this->systemUserDao->deleteSystemUsers( array(1,2,3));
+            $result = $this->systemUserDao->getSystemUsers(  );
+            $this->assertEquals(0, count(  $result));
+        }
+        
+        public function testGetAssignableUserRoles(){
+            $result = $this->systemUserDao->getAssignableUserRoles();
+            $this->assertEquals($result[0]->getName(),'Admin');
+            $this->assertEquals($result[1]->getName(),'Admin2');
+            $this->assertEquals(7, count(  $result));
+        }
+        
+        public function testGetAdminUserCount() {
+            
+            $this->assertEquals(1, $this->systemUserDao->getAdminUserCount());
+            $this->assertEquals(2, $this->systemUserDao->getAdminUserCount(false));
+            $this->assertEquals(2, $this->systemUserDao->getAdminUserCount(true, false));
+            $this->assertEquals(3, $this->systemUserDao->getAdminUserCount(false, false));
+            
+        }
+        
+        public function testUpdatePassword() {
+            
+            $this->assertEquals(1, $this->systemUserDao->updatePassword(1, 'samantha2'));
+            
+            $userObject = TestDataService::fetchObject('SystemUser', 1);
+            
+            $this->assertEquals('samantha2', $userObject->getUserPassword());
+            
+        }
+        
+    public function testGetSystemUserIdList() {
+        
+        $result = $this->systemUserDao->getSystemUserIdList();
+        
+        $this->assertEquals(3, count($result));
+        $this->assertEquals(array(1, 2, 3), $result);
+    }
+    
+    public function testGetSystemUserIdListForOneActiveUser() {
+        
+        $q = Doctrine_Query::create()
+                             ->update('SystemUser')
+                             ->set('deleted', 1)
+                             ->whereIn('id', array(2, 3));        
+        $q->execute();
+
+        $result = $this->systemUserDao->getSystemUserIdList();
+        
+        $this->assertTrue(is_array($result));
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(1, $result[0]);
+        
+    }
+    
+    /**
+     *
+     * @covers SystemUserDao::getNonPredefinedUserRoles
+     */
+    public function testGetNonPredefinedUserRoles() {
+        $userRoleNames = array('Admin2', 'TestAdmin', 'UserRole1', 'UserRole2', 'UserRole3');
+
+        $useRoles = $this->systemUserDao->getNonPredefinedUserRoles();
+        $this->assertEquals(count($userRoleNames), count($useRoles));
+        for ($i = 0; $i < count($userRoleNames); $i++) {
+            $userRole = $useRoles[$i];
+            $this->assertTrue($userRole instanceof UserRole);
+            $this->assertEquals($userRoleNames[$i], $userRole->getName());
+        }
+    }
+    
+    public function testGetEmployeesByUserRole() {
+        
+        // default
+        $employees = $this->systemUserDao->getEmployeesByUserRole('Admin');        
+        $this->assertEquals(2, count($employees));
+        
+        // with terminated employees
+        $employees = $this->systemUserDao->getEmployeesByUserRole('Admin', false, true);        
+        $this->assertEquals(2, count($employees));
+
+        $employees = $this->systemUserDao->getEmployeesByUserRole('Ess', false, true);        
+        $this->assertEquals(1, count($employees));
+        
+        $employees = $this->systemUserDao->getEmployeesByUserRole('TestAdmin', false, true);        
+        $this->assertEquals(0, count($employees));
+        
+    }
+    
+    
+}
+

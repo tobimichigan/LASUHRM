@@ -1,0 +1,48 @@
+
+LAGOS STATE UNIVERSITY HUMAN RESOURCE MANAGER LICENSE
+		      		1st, June 2014
+
+ Copyright (C) 2014, LAGOS STATE UNIVERSITY HUMAN RESOURCE MANAGER
+ LAGOS BADAGRY EXPRESSWAY, OJO TOWN, LAGOS. NIGERIA.
+
+			    Preamble
+Glory to God, Jesus Christ, the Son of God and the Holy Spirit.
+
+LASUHRM is a comprehensive Human Resource Management (HRM) System that captures all the essential functionalities required for the Academic/Non Academic Staff Establishments of Lagos State University respectively. This Software has been tested on a remote server and is capable of encapsulating large information of the Lagos State University staff. This Software, which is an open source program has been re-Developed and re-engineered by OWOEYE OLUWATOBI MICHAEL, BSc. Computer Science, for Lagos State University Academic/Non Academic Staff Establishments.
+Copyright (C) 1983-2014 Lagos State University, http://www.lasu.edu.ng.
+
+		  LAGOS STATE UNIVERSITY HUMAN RESOURCE MANAGER LICENSE
+
+I would like to start by defining the word free.  In synonyms free implies gratis, free of charge, without charge, at no cost,complimentary, librated, open.   This software program, just like Word-press,  Joomla and OrangeHRM  Content Management Systems program structures, is based on open sourced Php.Mysql.
+ 
+Even in free things, some kind of cost is still incurred, because not everyone can afford free itself. 
+
+This computer program called LASUHRM price/cost of development has been taken off. 
+
+The rest of the burden rests with the recipient of the software who is at the receiving end of implementing, structuring and maintenance. This program as at the time of development and re-engineering has been built to be effective in managing all  rudimentary to advanced processes of record keeping for its Academic/Non Academic Staff Establishments sensitive files and data. This License applies to this Software program. Furthermore, this software program up until the time of writing this, is highly effective, re-engineered and a developed echelon, rock solid tested over local, remote computers and is capable of holding data of over 900,000 for the longest term and is donated free of charge for development and advancement of Lagos State University Staff Establishments and Community respectively as private ample time and resource has been put into it for the University's benefit.
+Activities relating to further modification, deployment and maintenance to this program henceforth belongs to the Lagos State University.
+
+2. 	This software program from this day forthwith becomes propriety of the Lagos State University Community and becomes the sole responsibility of its management to see to its successful implementation and upkeep.
+
+3. 	Maintenance, /Distribution and deployment of its source codes over the University's servers are at the sole discretion of the University's management staff.
+
+4. 	The source code for a work means the preferred form of the work for making modifications to it.  For an executable work, complete source code means all the source code for all modules it contains, plus any associated interface definition files, plus the scripts used to control compilation and installation of the executable.  However, as a special exception, the source code distributed need not include anything that is normally distributed (in either source or binary 	form) with the major components (compiler, kernel, and so on) of the operating system on which the executable runs, unless that component itself accompanies the executable. 
+
+The source code of LASU HRM has been enclosed on a CD and sent to the Current Vice Chancellor. 
+
+If distribution of executable or object code is made by offering access to copy from a designated place, then offering equivalent access to copy the source code from the same place counts as distribution of the source code, even though third parties are not compelled to copy the source along with the object code.
+		
+5. 	This program is based on an open source technology to be precise, php.mysql in which the University's server runs hence, Lagos State University's Web server and computer systems can encapsulate and run this program without any fuss or anomaly.
+
+This program was re-developed, re-engineered  in the hope that it will be useful, be effective, serve timely and be extremely resourceful to the University's efforts in managing its past, present and future human resource which is the crown of all its resources. 
+	
+Long live the Federal Republic of NIGERIA, and long live Lagos State University.
+Accept my hearty congratulations, my Alma Mata, Lagos State University.
+	
+All Glory to God creator of Heaven and Earth, Jesus Christ of Nazareth and the Holy Spirit. 
+Forever-more. Amen.
+
+OLUWATOBI OWOEYE
+ B.Sc. Computer SCIENCE
+(Software Developer/Engineer)
+(Author: Handsonlabs in php.mysql, available on http://amazon.com)

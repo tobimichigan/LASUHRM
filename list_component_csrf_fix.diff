@@ -1,0 +1,140 @@
+Index: symfony/plugins/orangehrmPimPlugin/modules/pim/actions/deleteEmployeesAction.class.php
+===================================================================
+--- symfony/plugins/orangehrmPimPlugin/modules/pim/actions/deleteEmployeesAction.class.php	(revision 11821)
++++ symfony/plugins/orangehrmPimPlugin/modules/pim/actions/deleteEmployeesAction.class.php	(working copy)
+@@ -35,25 +35,28 @@
+         
+ 
+         if ($allowedToDeleteActive || $allowedToDeleteTerminated) {
+-            $ids = $request->getParameter('chkSelectRow');
++            $form = new DefaultListForm(array(), array(), true) ;
++            $form->bind($request->getParameter($form->getName()));
++            if ($form->isValid()) {
++                $ids = $request->getParameter('chkSelectRow');
+ 
+-            $userRoleManager = $this->getContext()->getUserRoleManager();
+-            if (!$userRoleManager->areEntitiesAccessible('Employee', $ids)) {
+-                $this->forward(sfConfig::get('sf_secure_module'), sfConfig::get('sf_secure_action'));
+-            }
+-            
+-            $this->_checkLastAdminDeletion($ids);
++                $userRoleManager = $this->getContext()->getUserRoleManager();
++                if (!$userRoleManager->areEntitiesAccessible('Employee', $ids)) {
++                    $this->forward(sfConfig::get('sf_secure_module'), sfConfig::get('sf_secure_action'));
++                }
+ 
+-            $employeeService = $this->getEmployeeService();               
+-            $count = $employeeService->deleteEmployees($ids);
++                $this->_checkLastAdminDeletion($ids);
+ 
+-            if ($count == count($ids)) {
+-                $this->getUser()->setFlash('success', __(TopLevelMessages::DELETE_SUCCESS));
+-            } else {
+-                $this->getUser()->setFlash('failure', __('A Problem Occured When Deleting The Selected Employees'));
++                $employeeService = $this->getEmployeeService();               
++                $count = $employeeService->deleteEmployees($ids);
++
++                if ($count == count($ids)) {
++                    $this->getUser()->setFlash('success', __(TopLevelMessages::DELETE_SUCCESS));
++                } else {
++                    $this->getUser()->setFlash('failure', __('A Problem Occured When Deleting The Selected Employees'));
++                }
+             }
+-
+-            $this->redirect('pim/viewEmployeeList');
++                $this->redirect('pim/viewEmployeeList');
+         } else {
+             $this->getUser()->setFlash('warning', __('Contact Admin for delete Credentials'));
+             $this->redirect('pim/viewEmployeeList');
+Index: symfony/plugins/orangehrmCorePlugin/lib/form/DefaultListForm.php
+===================================================================
+--- symfony/plugins/orangehrmCorePlugin/lib/form/DefaultListForm.php	(revision 0)
++++ symfony/plugins/orangehrmCorePlugin/lib/form/DefaultListForm.php	(revision 0)
+@@ -0,0 +1,26 @@
++<?php
++/**
++ * OrangeHRM is a comprehensive Human Resource Management (HRM) System that captures
++ * all the essential functionalities required for any enterprise.
++ * Copyright (C) 2006 OrangeHRM Inc., http://www.orangehrm.com
++ *
++ * OrangeHRM is free software; you can redistribute it and/or modify it under the terms of
++ * the GNU General Public License as published by the Free Software Foundation; either
++ * version 2 of the License, or (at your option) any later version.
++ *
++ * OrangeHRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
++ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along with this program;
++ * if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
++ * Boston, MA  02110-1301, USA
++ */
++class DefaultListForm extends sfForm{
++    
++    public function configure() {
++        $this->widgetSchema->setNameFormat('defaultList[%s]');
++    }
++}
++
++?>
+Index: symfony/plugins/orangehrmCorePlugin/modules/core/actions/ohrmListComponent.class.php
+===================================================================
+--- symfony/plugins/orangehrmCorePlugin/modules/core/actions/ohrmListComponent.class.php	(revision 11821)
++++ symfony/plugins/orangehrmCorePlugin/modules/core/actions/ohrmListComponent.class.php	(working copy)
+@@ -10,6 +10,7 @@
+     protected static $numberOfRecords;
+     protected static $definitionsPath;
+     protected static $activePlugin;
++    protected static $listForm ;
+ 
+     public static $pageNumber = 0;
+ 
+@@ -59,6 +60,8 @@
+         $this->className = self::$configurationFactory->getClassName();
+         $this->partial = self::$headerPartial;
+         $this->footerPartial = self::$footerPartial;
++        $this->listForm = ( empty( self::$listForm) )? new DefaultListForm(array(),array(),true) :  self::$listForm ;
++          
+                 
+         $this->applyRuntimeDefinitions();
+ 
+@@ -89,8 +92,26 @@
+         self::$listData = $data;
+     }
+ 
++     /**
++     *
++     * @return mixed
++     */
++    public static function getListForm() {
++        
++        
++        return self::$listForm;
++    }
++    
+     /**
+      *
++     * @param mixed $data 
++     */
++    public static function setListForm($form) {
++        self::$listForm = $form;
++    }
++    
++    /**
++     *
+      * @param string $partial 
+      */
+     public static function setHeaderPartial($partial) {
+Index: symfony/plugins/orangehrmCorePlugin/modules/core/templates/_ohrmList.php
+===================================================================
+--- symfony/plugins/orangehrmCorePlugin/modules/core/templates/_ohrmList.php	(revision 11821)
++++ symfony/plugins/orangehrmCorePlugin/modules/core/templates/_ohrmList.php	(working copy)
+@@ -114,7 +114,7 @@
+     ?>
+         
+     <form method="<?php echo $formMethod; ?>" action="<?php echo $formUrl; ?>" name="frmList_ohrmListComponent" id="frmList_ohrmListComponent">
+-        
++        <?php echo $listForm->render() ?>
+ <?php if (count($buttons) > 0 || isset($extraButtons) || $pager->haveToPaginate()) : ?>        
+  <div class="top">          
+         
